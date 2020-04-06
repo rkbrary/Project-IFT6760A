@@ -181,6 +181,8 @@ if __name__ == '__main__':
                     help="Dropout after the second hidden layer.")
     parser.add_argument("--label_smoothing", type=float, default=0.1, nargs="?",
                     help="Amount of label smoothing.")
+    parser.add_argument("--BK", type=bool, default=False, nargs="?",
+                    help="Whether to use background knowledge or not.")
 
     args = parser.parse_args()
     dataset = args.dataset

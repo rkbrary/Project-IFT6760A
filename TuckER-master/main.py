@@ -7,7 +7,7 @@ from model import *
 from torch.optim.lr_scheduler import ExponentialLR
 import argparse
 
-    
+
 class Experiment:
 
     def __init__(self, learning_rate=0.0005, ent_vec_dim=200, rel_vec_dim=200, 

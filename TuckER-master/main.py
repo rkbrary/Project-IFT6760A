@@ -139,9 +139,9 @@ class Experiment:
                 losses.append(loss.item())
             if self.decay_rate:
                 scheduler.step()
-            print(it)
-            print(time.time()-start_train)    
-            print(np.mean(losses))
+            print('Iteration:'+it)
+            print('Time:'+str(time.time()-start_train))    
+            print('Loss:'np.mean(losses))
             model.eval()
             with torch.no_grad():
                 print("Validation:")

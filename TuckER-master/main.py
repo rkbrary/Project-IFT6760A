@@ -1,3 +1,6 @@
+import wandb
+wandb.login('1e505430989c86455d2d70e1ef990b4bc50cb69c')
+wandb.init(project="ift6760-exp",anonymous='allow')
 from load_data import Data
 import numpy as np
 import torch
@@ -87,7 +90,11 @@ class Experiment:
                         hits[hits_level].append(1.0)
                     else:
                         hits[hits_level].append(0.0)
-
+        wandb.log({
+            'Hits @10':np.mean(hits[9]),
+            'Hits @3':np.mean(hits[2]),
+            'Hits @1':np.mean(hits[0]),
+            'MRR':np.mean(1./np.array(ranks))})
         print('Hits @10: {0}'.format(np.mean(hits[9])))
         print('Hits @3: {0}'.format(np.mean(hits[2])))
         print('Hits @1: {0}'.format(np.mean(hits[0])))
@@ -107,8 +114,9 @@ class Experiment:
 
         train_data_idxs = self.get_data_idxs(d.train_data)
         print("Number of training data points: %d" % len(train_data_idxs))
-
+        
         model = TuckER(d, self.ent_vec_dim, self.rel_vec_dim, **self.kwargs)
+        wandb.watch(model)
         if self.cuda:
             model.cuda()
         model.init()
@@ -148,9 +156,11 @@ class Experiment:
             model.eval()
             with torch.no_grad():
                 print("Validation:")
+                config['Mode']='Validation'
                 self.evaluate(model, d.valid_data)
                 if not it%2:
                     print("Test:")
+                    config['Mode']='Test'
                     start_test = time.time()
                     self.evaluate(model, d.test_data)
                     print("Testing time:"+str(time.time()-start_test))
@@ -188,6 +198,21 @@ if __name__ == '__main__':
                     help="Whether to use background knowledge or not.")
 
     args = parser.parse_args()
+    # Saving the configuration
+    config = wandb.config
+    config.lr = args.lr
+    config.dr = args.dr
+    config.edim = args.edim
+    config.rdim = args.rdim
+    config.input_dropout = args.input_dropout
+    config.hidden_dropout1 = args.hidden_dropout1
+    config.hidden_dropout2 = args.hidden_dropout2
+    config.label_smoothing = args.label_smoothing
+    config.batch_size = args.batch_size
+    config.num_iterations = args.num_iterations
+    if args.bk: config.bk = {'Background Knowledge': 'On'}
+    else: config.bk = {'Background Knowledge': 'Off'}
+    
     dataset = args.dataset
     data_dir = "data/%s/" % dataset
     torch.backends.cudnn.deterministic = True 

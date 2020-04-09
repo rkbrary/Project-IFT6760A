@@ -116,7 +116,7 @@ class Experiment:
         print("Number of training data points: %d" % len(train_data_idxs))
         
         model = TuckER(d, self.ent_vec_dim, self.rel_vec_dim, **self.kwargs)
-        wandb.watch(model)
+        wandb.watch(model, log=None)
         if self.cuda:
             model.cuda()
         model.init()
@@ -156,11 +156,9 @@ class Experiment:
             model.eval()
             with torch.no_grad():
                 print("Validation:")
-                config['Mode']='Validation'
                 self.evaluate(model, d.valid_data)
                 if not it%2:
                     print("Test:")
-                    config['Mode']='Test'
                     start_test = time.time()
                     self.evaluate(model, d.test_data)
                     print("Testing time:"+str(time.time()-start_test))

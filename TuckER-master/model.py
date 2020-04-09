@@ -19,8 +19,8 @@ class TuckER(torch.nn.Module):
 
         self.bn0 = torch.nn.BatchNorm1d(d1)
         self.bn1 = torch.nn.BatchNorm1d(d1)
-        if kwargs["bk"]: self.constraints=torch.tensor([1,1,0,-1,-1,-1,-1,-1,1,-1,1]).to('cuda')
-        else: self.constraints=torch.zeros(11,dtype=torch.long,device='cuda')
+        self.bk = kwargs["bk"]
+        if self.bk: self.constraints=torch.tensor([1,1,0,-1,-1,-1,-1,-1,1,-1,1]).to('cuda')
         
 
     def init(self):
@@ -40,12 +40,16 @@ class TuckER(torch.nn.Module):
         x1 = self.bn1(x1)
         x1 = self.hidden_dropout2(x1)
         x1 = torch.einsum('bk,nk->bn',x1, self.E.weight)
-        x1 = torch.einsum('bn,b->bn',x1,1-0.5*torch.abs(self.constraints[r_idx]))
         
-        x2 = torch.einsum('bjk,bk->bj',W_mat,x)                     #(batch, d_e)
-        x2 = self.bn1(x2)
-        x2 = self.hidden_dropout2(x2)
-        x2 = torch.einsum('bj,nj->bn',x2, self.E.weight)
-        x2 = torch.einsum('bn,b->bn',x2,0.5*self.constraints[r_idx])
-        pred = torch.sigmoid(x1+x2)
+        if self.bk:
+            x1 = torch.einsum('bn,b->bn',x1,1-0.5*torch.abs(self.constraints[r_idx]))
+            x2 = torch.einsum('bjk,bk->bj',W_mat,x)                     #(batch, d_e)
+            x2 = self.bn1(x2)
+            x2 = self.hidden_dropout2(x2)
+            x2 = torch.einsum('bj,nj->bn',x2, self.E.weight)
+            x2 = torch.einsum('bn,b->bn',x2,0.5*self.constraints[r_idx])
+            pred = torch.sigmoid(x1+x2)
+            
+        else: pred = torch.sigmoid(x1)
+            
         return pred

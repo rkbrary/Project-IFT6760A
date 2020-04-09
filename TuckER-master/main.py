@@ -13,7 +13,7 @@ class Experiment:
     def __init__(self, learning_rate=0.0005, ent_vec_dim=200, rel_vec_dim=200, 
                  num_iterations=500, batch_size=128, decay_rate=0., cuda=False, 
                  input_dropout=0.3, hidden_dropout1=0.4, hidden_dropout2=0.5,
-                 label_smoothing=0.):
+                 label_smoothing=0., bk=False):
         self.learning_rate = learning_rate
         self.ent_vec_dim = ent_vec_dim
         self.rel_vec_dim = rel_vec_dim
@@ -23,7 +23,7 @@ class Experiment:
         self.label_smoothing = label_smoothing
         self.cuda = cuda
         self.kwargs = {"input_dropout": input_dropout, "hidden_dropout1": hidden_dropout1,
-                       "hidden_dropout2": hidden_dropout2}
+                       "hidden_dropout2": hidden_dropout2, "bk": bk}
         
     def get_data_idxs(self, data):
         data_idxs = [(self.entity_idxs[data[i][0]], self.relation_idxs[data[i][1]], \
@@ -99,6 +99,9 @@ class Experiment:
 
     def train_and_eval(self):
         print("Training the TuckER model...")
+        if self.kwargs["bk"]:
+            print("Background knowledge=True")
+            print("Model=",args.dataset)
         self.entity_idxs = {d.entities[i]:i for i in range(len(d.entities))}
         self.relation_idxs = {d.relations[i]:i for i in range(len(d.relations))}
 
@@ -197,7 +200,8 @@ if __name__ == '__main__':
     experiment = Experiment(num_iterations=args.num_iterations, batch_size=args.batch_size, learning_rate=args.lr, 
                             decay_rate=args.dr, ent_vec_dim=args.edim, rel_vec_dim=args.rdim, cuda=args.cuda,
                             input_dropout=args.input_dropout, hidden_dropout1=args.hidden_dropout1, 
-                            hidden_dropout2=args.hidden_dropout2, label_smoothing=args.label_smoothing)
+                            hidden_dropout2=args.hidden_dropout2, label_smoothing=args.label_smoothing,
+                            bk=args.bk)
     experiment.train_and_eval()
                 
 

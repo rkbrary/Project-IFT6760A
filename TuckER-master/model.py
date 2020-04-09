@@ -19,28 +19,33 @@ class TuckER(torch.nn.Module):
 
         self.bn0 = torch.nn.BatchNorm1d(d1)
         self.bn1 = torch.nn.BatchNorm1d(d1)
+        if kwargs["bk"]: self.constraints=torch.tensor([1,1,0,-1,-1,-1,-1,-1,1,-1,1]).to('cuda')
+        else: self.constraints=torch.zeros(11,dtype=torch.long,device='cuda')
         
 
     def init(self):
         xavier_normal_(self.E.weight.data)
         xavier_normal_(self.R.weight.data)
 
-    def forward(self, e1_idx, r_idx):
-        e1 = self.E(e1_idx)
-        x = self.bn0(e1)
-        x = self.input_dropout(x)
-        x = x.view(-1, 1, e1.size(1))
-
-        r = self.R(r_idx)
-        W_mat = torch.mm(r, self.W.view(r.size(1), -1))
-        W_mat = W_mat.view(-1, e1.size(1), e1.size(1))
+    def forward(self, e1_idx, r_idx):        
+        r = self.R(r_idx)                                 #(batch, d_r)
+        W_mat = torch.einsum('ijk,bi->bjk',self.W,r)    #(batch, d_e, d_e)
         W_mat = self.hidden_dropout1(W_mat)
-
-        x = torch.bmm(x, W_mat) 
-        x = x.view(-1, e1.size(1))      
-        x = self.bn1(x)
-        x = self.hidden_dropout2(x)
-        x = torch.mm(x, self.E.weight.transpose(1,0))
-        pred = torch.sigmoid(x)
+        
+        e1 = self.E(e1_idx)                               #(batch,d_e)
+        x = self.bn0(e1)                                  #(batch,d_e)
+        x = self.input_dropout(x)
+        
+        x1 = torch.einsum('bjk,bj->bk',W_mat,x)                      #(batch, d_e)
+        x1 = self.bn1(x1)
+        x1 = self.hidden_dropout2(x1)
+        x1 = torch.einsum('bk,nk->bn',x1, self.E.weight)
+        x1 = torch.einsum('bn,b->bn',x1,1-0.5*torch.abs(self.constraints[r_idx]))
+        
+        x2 = torch.einsum('bjk,bk->bj',W_mat,x)                     #(batch, d_e)
+        x2 = self.bn1(x2)
+        x2 = self.hidden_dropout2(x2)
+        x2 = torch.einsum('bj,nj->bn',x2, self.E.weight)
+        x2 = torch.einsum('bn,b->bn',x2,0.5*self.constraints[r_idx])
+        pred = torch.sigmoid(x1+x2)
         return pred
-

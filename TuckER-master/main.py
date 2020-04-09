@@ -5,7 +5,7 @@ import time
 from collections import defaultdict
 from model import *
 from torch.optim.lr_scheduler import ExponentialLR
-import argparse # Test joss, test online
+import argparse
 
 
 class Experiment:
@@ -139,9 +139,9 @@ class Experiment:
                 losses.append(loss.item())
             if self.decay_rate:
                 scheduler.step()
-            print('Iteration:'+it)
-            print('Time:'+str(time.time()-start_train))    
-            print('Loss:'np.mean(losses))
+            print('Iteration:'+str(it))
+            print('Training Time:'+str(time.time()-start_train))    
+            print('Loss:'+str(np.mean(losses)))
             model.eval()
             with torch.no_grad():
                 print("Validation:")
@@ -150,7 +150,7 @@ class Experiment:
                     print("Test:")
                     start_test = time.time()
                     self.evaluate(model, d.test_data)
-                    print(time.time()-start_test)
+                    print("Testing time:"+str(time.time()-start_test))
            
 
         
@@ -181,7 +181,7 @@ if __name__ == '__main__':
                     help="Dropout after the second hidden layer.")
     parser.add_argument("--label_smoothing", type=float, default=0.1, nargs="?",
                     help="Amount of label smoothing.")
-    parser.add_argument("--BK", type=bool, default=False, nargs="?",
+    parser.add_argument("--bk", type=bool, default=False, nargs="?",
                     help="Whether to use background knowledge or not.")
 
     args = parser.parse_args()
@@ -193,7 +193,7 @@ if __name__ == '__main__':
     torch.manual_seed(seed)
     if torch.cuda.is_available:
         torch.cuda.manual_seed_all(seed) 
-    d = Data(data_dir=data_dir, reverse=True)
+    d = Data(data_dir=data_dir, reverse=False)
     experiment = Experiment(num_iterations=args.num_iterations, batch_size=args.batch_size, learning_rate=args.lr, 
                             decay_rate=args.dr, ent_vec_dim=args.edim, rel_vec_dim=args.rdim, cuda=args.cuda,
                             input_dropout=args.input_dropout, hidden_dropout1=args.hidden_dropout1, 

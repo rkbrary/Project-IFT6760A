@@ -1,0 +1,31 @@
+{
+    "root": "C:\\Users\\joss1\\Cours H2020\\IFT6760A\\Project\\TuckER-master",
+    "program": "C:\\Users\\joss1\\Cours H2020\\IFT6760A\\Project\\TuckER-master\\main.py",
+    "startedAt": "2020-04-09T17:26:50.201789",
+    "host": "LAPTOP-NIQHA6VG",
+    "username": "joss1",
+    "executable": "C:\\Users\\joss1\\.conda\\envs\\torch\\python.exe",
+    "os": "Windows-10-10.0.17763-SP0",
+    "python": "3.7.6",
+    "cpu_count": 12,
+    "args": [
+        "--dataset=WN18RR",
+        "--num_iterations=30",
+        "--batch_size=128",
+        "--lr=0.003",
+        "--dr=1.0",
+        "--edim=200",
+        "--rdim=11",
+        "--input_dropout=0.2",
+        "--hidden_dropout1=0.2",
+        "--hidden_dropout2=0.3",
+        "--label_smoothing=0.1",
+        "--bk=True"
+    ],
+    "state": "running",
+    "jobType": null,
+    "mode": "run",
+    "name": "icy-sun-3",
+    "project": "ift6760-exp",
+    "heartbeatAt": "2020-04-09T17:47:58.897482"
+}

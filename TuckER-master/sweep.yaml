@@ -1,0 +1,34 @@
+method: random
+metric:
+  goal: maximize
+  name: MRR
+parameters:
+  batch_size:
+    value: 128
+  bk:
+    value: true
+  dr:
+    values:
+    - 1
+    - 0.995
+  edim:
+    value: 200
+  hidden_dropout1:
+    value: 0.2
+  hidden_dropout2:
+    value: 0.3
+  input_dropout:
+    value: 0.2
+  label_smoothing:
+    value: 0.2
+  lr:
+    values:
+    - 0.005
+  num_iterations:
+    value: 20
+  rdim:
+    values:
+    - 15
+    - 10
+    - 7
+program: main.py

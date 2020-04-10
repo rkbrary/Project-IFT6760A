@@ -1,0 +1,427 @@
+%run main.py --dataset=WN18 --num_iterations=30 --batch_size=128 --lr=0.005 --dr=0.995 --edim=200 --rdim=30 --input_dropout=0.2 \
+--hidden_dropout1=0.1 --hidden_dropout2=0.2 --label_smoothing=0.1
+
+Training the TuckER model...
+Number of training data points: 282884
+Starting training...
+1
+52.85376501083374
+0.01734823402967819
+Validation:
+Number of data points: 10000
+Hits @10: 0.0004
+Hits @3: 0.0003
+Hits @1: 0.0001
+Mean rank: 16820.3367
+Mean reciprocal rank: 0.00048655765969960905
+2
+53.76841926574707
+0.0009104617688542452
+Validation:
+Number of data points: 10000
+Hits @10: 0.0031
+Hits @3: 0.0015
+Hits @1: 0.0004
+Mean rank: 15550.5781
+Mean reciprocal rank: 0.001732635011114515
+Test:
+Number of data points: 10000
+Hits @10: 0.0026
+Hits @3: 0.0012
+Hits @1: 0.0003
+Mean rank: 15556.1616
+Mean reciprocal rank: 0.0015400905806848928
+17.505143880844116
+3
+53.891592264175415
+0.0007355449890793734
+Validation:
+Number of data points: 10000
+Hits @10: 0.0221
+Hits @3: 0.0132
+Hits @1: 0.0076
+Mean rank: 14270.0206
+Mean reciprocal rank: 0.013007641553866784
+4
+54.33411693572998
+0.0006600291452889842
+Validation:
+Number of data points: 10000
+Hits @10: 0.0688
+Hits @3: 0.0467
+Hits @1: 0.0279
+Mean rank: 11455.3839
+Mean reciprocal rank: 0.042282207973622095
+Test:
+Number of data points: 10000
+Hits @10: 0.0712
+Hits @3: 0.0473
+Hits @1: 0.0291
+Mean rank: 11159.9326
+Mean reciprocal rank: 0.0435697002806873
+15.501455545425415
+5
+54.42670941352844
+0.0006139748843744542
+Validation:
+Number of data points: 10000
+Hits @10: 0.1445
+Hits @3: 0.1063
+Hits @1: 0.0812
+Mean rank: 7070.4862
+Mean reciprocal rank: 0.10283958016309125
+6
+54.365923166275024
+0.0005796408849842819
+Validation:
+Number of data points: 10000
+Hits @10: 0.2839
+Hits @3: 0.2141
+Hits @1: 0.1584
+Mean rank: 3988.1269
+Mean reciprocal rank: 0.19998167445600978
+Test:
+Number of data points: 10000
+Hits @10: 0.2842
+Hits @3: 0.2206
+Hits @1: 0.1671
+Mean rank: 3918.5144
+Mean reciprocal rank: 0.20675754695719098
+15.64023733139038
+7
+54.4062614440918
+0.0005342573928403124
+Validation:
+Number of data points: 10000
+Hits @10: 0.4391
+Hits @3: 0.3577
+Hits @1: 0.28
+Mean rank: 2339.2465
+Mean reciprocal rank: 0.3345976494382103
+8
+54.98903489112854
+0.0004887975082965568
+Validation:
+Number of data points: 10000
+Hits @10: 0.6205
+Hits @3: 0.5491
+Hits @1: 0.4654
+Mean rank: 1466.5668
+Mean reciprocal rank: 0.5203544746756528
+Test:
+Number of data points: 10000
+Hits @10: 0.6256
+Hits @3: 0.5516
+Hits @1: 0.4668
+Mean rank: 1374.1443
+Mean reciprocal rank: 0.5221195522485128
+16.052062511444092
+9
+56.822527170181274
+0.00045681042869986693
+Validation:
+Number of data points: 10000
+Hits @10: 0.747
+Hits @3: 0.6908
+Hits @1: 0.6173
+Mean rank: 1056.1809
+Mean reciprocal rank: 0.6640676486111363
+10
+56.00395154953003
+0.0004367172041438417
+Validation:
+Number of data points: 10000
+Hits @10: 0.807
+Hits @3: 0.7621
+Hits @1: 0.699
+Mean rank: 914.8969
+Mean reciprocal rank: 0.73843774162067
+Test:
+Number of data points: 10000
+Hits @10: 0.8181
+Hits @3: 0.7654
+Hits @1: 0.6975
+Mean rank: 927.1566
+Mean reciprocal rank: 0.7398389499314859
+15.382552146911621
+11
+54.9893319606781
+0.0004120450831865488
+Validation:
+Number of data points: 10000
+Hits @10: 0.8811
+Hits @3: 0.8449
+Hits @1: 0.7895
+Mean rank: 804.4158
+Mean reciprocal rank: 0.8230508026252786
+12
+54.30590796470642
+0.0004099504574299797
+Validation:
+Number of data points: 10000
+Hits @10: 0.8903
+Hits @3: 0.8543
+Hits @1: 0.7968
+Mean rank: 819.8444
+Mean reciprocal rank: 0.8311406526631335
+Test:
+Number of data points: 10000
+Hits @10: 0.8962
+Hits @3: 0.8633
+Hits @1: 0.8011
+Mean rank: 779.9236
+Mean reciprocal rank: 0.8369099044031467
+15.142556190490723
+13
+54.614089250564575
+0.0003917457424319991
+Validation:
+Number of data points: 10000
+Hits @10: 0.9286
+Hits @3: 0.9067
+Hits @1: 0.8695
+Mean rank: 786.7551
+Mean reciprocal rank: 0.8913405172924324
+14
+54.69099020957947
+0.0003774317440135552
+Validation:
+Number of data points: 10000
+Hits @10: 0.938
+Hits @3: 0.9229
+Hits @1: 0.8957
+Mean rank: 718.9174
+Mean reciprocal rank: 0.9115263870930219
+Test:
+Number of data points: 10000
+Hits @10: 0.9411
+Hits @3: 0.926
+Hits @1: 0.8959
+Mean rank: 691.0822
+Mean reciprocal rank: 0.9129120561332511
+15.013242959976196
+15
+55.81443428993225
+0.0003730578443356713
+Validation:
+Number of data points: 10000
+Hits @10: 0.9429
+Hits @3: 0.9313
+Hits @1: 0.9082
+Mean rank: 725.0819
+Mean reciprocal rank: 0.9213980368007083
+16
+54.74957036972046
+0.00036895897981442053
+Validation:
+Number of data points: 10000
+Hits @10: 0.945
+Hits @3: 0.9359
+Hits @1: 0.9166
+Mean rank: 722.7992
+Mean reciprocal rank: 0.9275275614216116
+Test:
+Number of data points: 10000
+Hits @10: 0.9462
+Hits @3: 0.9367
+Hits @1: 0.9187
+Mean rank: 696.4375
+Mean reciprocal rank: 0.9290718587873338
+14.434771060943604
+17
+54.679041147232056
+0.0003660915434946583
+Validation:
+Number of data points: 10000
+Hits @10: 0.9454
+Hits @3: 0.9377
+Hits @1: 0.9215
+Mean rank: 704.4427
+Mean reciprocal rank: 0.9303961745513701
+18
+54.17172288894653
+0.00036163738946049645
+Validation:
+Number of data points: 10000
+Hits @10: 0.9471
+Hits @3: 0.9422
+Hits @1: 0.9285
+Mean rank: 718.1513
+Mean reciprocal rank: 0.9361363095420893
+Test:
+Number of data points: 10000
+Hits @10: 0.9477
+Hits @3: 0.9419
+Hits @1: 0.9284
+Mean rank: 679.4744
+Mean reciprocal rank: 0.9360335304524094
+14.595375776290894
+19
+53.669002294540405
+0.000359713976927135
+Validation:
+Number of data points: 10000
+Hits @10: 0.9474
+Hits @3: 0.9422
+Hits @1: 0.9285
+Mean rank: 712.5486
+Mean reciprocal rank: 0.9359863274347852
+20
+53.99191856384277
+0.0003597467256752045
+Validation:
+Number of data points: 10000
+Hits @10: 0.9476
+Hits @3: 0.9432
+Hits @1: 0.9341
+Mean rank: 690.2355
+Mean reciprocal rank: 0.9394250993864464
+Test:
+Number of data points: 10000
+Hits @10: 0.9489
+Hits @3: 0.9441
+Hits @1: 0.9358
+Mean rank: 684.3168
+Mean reciprocal rank: 0.9406656664423008
+14.678310632705688
+21
+53.63898968696594
+0.00035646576755864597
+Validation:
+Number of data points: 10000
+Hits @10: 0.9475
+Hits @3: 0.943
+Hits @1: 0.9316
+Mean rank: 698.4724
+Mean reciprocal rank: 0.9378623570146325
+22
+55.64680862426758
+0.00035483619817344665
+Validation:
+Number of data points: 10000
+Hits @10: 0.9478
+Hits @3: 0.9433
+Hits @1: 0.9362
+Mean rank: 661.8061
+Mean reciprocal rank: 0.940437626919492
+Test:
+Number of data points: 10000
+Hits @10: 0.9493
+Hits @3: 0.9445
+Hits @1: 0.9366
+Mean rank: 651.1346
+Mean reciprocal rank: 0.9412523224721883
+14.433650016784668
+23
+52.219277143478394
+0.0003531110056518314
+Validation:
+Number of data points: 10000
+Hits @10: 0.9488
+Hits @3: 0.9442
+Hits @1: 0.936
+Mean rank: 678.0211
+Mean reciprocal rank: 0.9408900862266506
+24
+53.35555100440979
+0.00035389053130397774
+Validation:
+Number of data points: 10000
+Hits @10: 0.9486
+Hits @3: 0.9437
+Hits @1: 0.9384
+Mean rank: 675.6287
+Mean reciprocal rank: 0.9419335489167628
+Test:
+Number of data points: 10000
+Hits @10: 0.9505
+Hits @3: 0.9457
+Hits @1: 0.9383
+Mean rank: 670.3728
+Mean reciprocal rank: 0.9427194259937667
+15.16801905632019
+25
+52.8641037940979
+0.0003528683471144699
+Validation:
+Number of data points: 10000
+Hits @10: 0.9497
+Hits @3: 0.9469
+Hits @1: 0.9385
+Mean rank: 650.4015
+Mean reciprocal rank: 0.9430841177941384
+26
+52.5913188457489
+0.000350217553444126
+Validation:
+Number of data points: 10000
+Hits @10: 0.9501
+Hits @3: 0.947
+Hits @1: 0.94
+Mean rank: 646.5159
+Mean reciprocal rank: 0.9439369978960752
+Test:
+Number of data points: 10000
+Hits @10: 0.9508
+Hits @3: 0.9474
+Hits @1: 0.941
+Mean rank: 644.5031
+Mean reciprocal rank: 0.9446568653007358
+14.237949132919312
+27
+51.044421911239624
+0.00035135235603667674
+Validation:
+Number of data points: 10000
+Hits @10: 0.9495
+Hits @3: 0.9458
+Hits @1: 0.9395
+Mean rank: 673.4426
+Mean reciprocal rank: 0.9433278327648577
+28
+51.573044776916504
+0.0003504866403259576
+Validation:
+Number of data points: 10000
+Hits @10: 0.9502
+Hits @3: 0.9471
+Hits @1: 0.9403
+Mean rank: 672.4624
+Mean reciprocal rank: 0.9440971873193928
+Test:
+Number of data points: 10000
+Hits @10: 0.9516
+Hits @3: 0.9477
+Hits @1: 0.9412
+Mean rank: 623.4945
+Mean reciprocal rank: 0.9450712752391133
+13.332336902618408
+29
+50.98660969734192
+0.0003487435741588802
+Validation:
+Number of data points: 10000
+Hits @10: 0.9502
+Hits @3: 0.9466
+Hits @1: 0.9406
+Mean rank: 682.6903
+Mean reciprocal rank: 0.9441552525947858
+30
+51.55309748649597
+0.000349226482206453
+Validation:
+Number of data points: 10000
+Hits @10: 0.9502
+Hits @3: 0.9475
+Hits @1: 0.9412
+Mean rank: 677.6927
+Mean reciprocal rank: 0.9447767778806543
+Test:
+
+Number of data points: 10000
+Hits @10: 0.9518
+Hits @3: 0.9484
+Hits @1: 0.9407
+Mean rank: 629.1001
+Mean reciprocal rank: 0.9449433353444722
+14.282792568206787

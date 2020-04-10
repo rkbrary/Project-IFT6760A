@@ -1,0 +1,43 @@
+wandb_version: 1
+
+_wandb:
+  desc: null
+  value:
+    cli_version: 0.8.31
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    python_version: 3.7.6
+batch_size:
+  desc: null
+  value: 128
+bk:
+  desc: null
+  value:
+    Background Knowledge: 'Off'
+dr:
+  desc: null
+  value: 1.0
+edim:
+  desc: null
+  value: 200
+hidden_dropout1:
+  desc: null
+  value: 0.22516242303861578
+hidden_dropout2:
+  desc: null
+  value: 0.39853423737690574
+input_dropout:
+  desc: null
+  value: 0.4200994787896576
+label_smoothing:
+  desc: null
+  value: 0.1
+lr:
+  desc: null
+  value: 0.02449943079883923
+num_iterations:
+  desc: null
+  value: 78
+rdim:
+  desc: null
+  value: 8

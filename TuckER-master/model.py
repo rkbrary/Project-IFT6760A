@@ -20,7 +20,7 @@ class TuckER(torch.nn.Module):
         self.bn0 = torch.nn.BatchNorm1d(d1)
         self.bn1 = torch.nn.BatchNorm1d(d1)
         self.bk = kwargs["bk"]
-        if self.bk: self.constraints=torch.tensor([1,1,0,-1,-1,-1,-1,-1,1,-1,1]).to('cuda')
+        if self.bk: self.constraints=torch.tensor([0,1,-1,0,-1,-1,-1,-1,1,0,1]).to('cuda')
         
 
     def init(self):

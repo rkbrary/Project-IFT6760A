@@ -7,6 +7,7 @@ import torch
 import time
 from collections import defaultdict
 from model import *
+# from model_sym import *
 from torch.optim.lr_scheduler import ExponentialLR
 import argparse
 
@@ -157,20 +158,20 @@ class Experiment:
             with torch.no_grad():
                 print("Validation:")
                 self.evaluate(model, d.valid_data)
-                if not it%2:
-                    print("Test:")
-                    start_test = time.time()
-                    self.evaluate(model, d.test_data)
-                    print("Testing time:"+str(time.time()-start_test))
+        with torch.no_grad():
+            print("Test:")
+            start_test = time.time()
+            self.evaluate(model, d.test_data)
+            print("Testing time:"+str(time.time()-start_test))
            
 
         
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset", type=str, default="FB15k-237", nargs="?",
+    parser.add_argument("--dataset", type=str, default="WN18RR", nargs="?",
                     help="Which dataset to use: FB15k, FB15k-237, WN18 or WN18RR.")
-    parser.add_argument("--num_iterations", type=int, default=500, nargs="?",
+    parser.add_argument("--num_iterations", type=int, default=50, nargs="?",
                     help="Number of iterations.")
     parser.add_argument("--batch_size", type=int, default=128, nargs="?",
                     help="Batch size.")
@@ -180,17 +181,17 @@ if __name__ == '__main__':
                     help="Decay rate.")
     parser.add_argument("--edim", type=int, default=200, nargs="?",
                     help="Entity embedding dimensionality.")
-    parser.add_argument("--rdim", type=int, default=200, nargs="?",
+    parser.add_argument("--rdim", type=int, default=30, nargs="?",
                     help="Relation embedding dimensionality.")
     parser.add_argument("--cuda", type=bool, default=True, nargs="?",
                     help="Whether to use cuda (GPU) or not (CPU).")
-    parser.add_argument("--input_dropout", type=float, default=0.3, nargs="?",
+    parser.add_argument("--input_dropout", type=float, default=0.2, nargs="?",
                     help="Input layer dropout.")
-    parser.add_argument("--hidden_dropout1", type=float, default=0.4, nargs="?",
+    parser.add_argument("--hidden_dropout1", type=float, default=0.2, nargs="?",
                     help="Dropout after the first hidden layer.")
-    parser.add_argument("--hidden_dropout2", type=float, default=0.5, nargs="?",
+    parser.add_argument("--hidden_dropout2", type=float, default=0.3, nargs="?",
                     help="Dropout after the second hidden layer.")
-    parser.add_argument("--label_smoothing", type=float, default=0.1, nargs="?",
+    parser.add_argument("--label_smoothing", type=float, default=0.2, nargs="?",
                     help="Amount of label smoothing.")
     parser.add_argument("--bk", type=bool, default=False, nargs="?",
                     help="Whether to use background knowledge or not.")
@@ -208,8 +209,7 @@ if __name__ == '__main__':
     config.label_smoothing = args.label_smoothing
     config.batch_size = args.batch_size
     config.num_iterations = args.num_iterations
-    if args.bk: config.bk = {'Background Knowledge': 'On'}
-    else: config.bk = {'Background Knowledge': 'Off'}
+    config.bk=args.bk
     
     dataset = args.dataset
     data_dir = "data/%s/" % dataset

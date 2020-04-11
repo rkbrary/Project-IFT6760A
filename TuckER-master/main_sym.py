@@ -11,6 +11,7 @@ from collections import defaultdict
 from model_sym import *
 from torch.optim.lr_scheduler import ExponentialLR
 import argparse
+import os
 
 
 class Experiment:
@@ -264,7 +265,7 @@ if __name__ == '__main__':
                     help="Dropout after the second hidden layer.")
     parser.add_argument("--label_smoothing", type=float, default=0.2, nargs="?",
                     help="Amount of label smoothing.")
-    parser.add_argument("--bk", type=bool, default=False, nargs="?",
+    parser.add_argument("--bk", type=bool, default=True, nargs="?",
                     help="Whether to use background knowledge or not.")
 
     args = parser.parse_args()

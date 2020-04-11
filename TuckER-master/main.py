@@ -11,6 +11,7 @@ from model import *
 # from model_sym import *
 from torch.optim.lr_scheduler import ExponentialLR
 import argparse
+import os
 
 
 class Experiment:

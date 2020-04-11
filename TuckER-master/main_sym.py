@@ -156,7 +156,7 @@ class Experiment:
             print('Iteration:'+str(it+checkpoint['epoch']))
             print('Training Time:'+str(time.time()-start_train))    
             print('Loss:'+str(np.mean(losses)))
-            wandb.save({
+            torch.save({
                 'epoch': (it+checkpoint['epoch']),
                 'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': opt.state_dict()
@@ -220,7 +220,7 @@ class Experiment:
             print('Iteration:'+str(it))
             print('Training Time:'+str(time.time()-start_train))    
             print('Loss:'+str(np.mean(losses)))
-            wandb.save({
+            torch.save({
                 'epoch': it,
                 'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': opt.state_dict()

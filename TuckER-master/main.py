@@ -1,6 +1,7 @@
 import wandb
 wandb.login('1e505430989c86455d2d70e1ef990b4bc50cb69c')
 wandb.init(project="ift6760-exp",anonymous='allow')
+wandb.save("*.pt")
 from load_data import Data
 import numpy as np
 import torch
@@ -103,9 +104,74 @@ class Experiment:
         print('Mean reciprocal rank: {0}'.format(np.mean(1./np.array(ranks))))
 
 
+    def retrain(self, num_it, path="rkbrary/ift6760-exp/a1b2c3d", model_state='model_state.pt'):
+        checkpoint = wandb.restore(model_state_path, run_path=path)
 
+        print("Resuming training at epoch {} for {} epochs".format(checkpoint['epoch'], num_it))
+        if self.kwargs["bk"]:
+            print("Background knowledge=True")
+            print("Model=",args.dataset)
+        self.entity_idxs = {d.entities[i]:i for i in range(len(d.entities))}
+        self.relation_idxs = {d.relations[i]:i for i in range(len(d.relations))}
 
-    def train_and_eval(self):
+        train_data_idxs = self.get_data_idxs(d.train_data)
+        print("Number of training data points: %d" % len(train_data_idxs))
+        
+        model = TuckER(d, self.ent_vec_dim, self.rel_vec_dim, **self.kwargs)
+        wandb.watch(model, log=None)
+        if self.cuda:
+            model.cuda()
+        model.load_state_dict(checkpoint['model_state_dict'])
+        opt = torch.optim.Adam(model.parameters(), lr=self.learning_rate)
+        opt.load_state_dict(checkpoint['optimizer_state_dict'])
+        if self.decay_rate:
+            scheduler = ExponentialLR(opt, self.decay_rate)
+
+        er_vocab = self.get_er_vocab(train_data_idxs)
+        er_vocab_pairs = list(er_vocab.keys())
+
+        print("Starting training...")
+        for it in range(1, num_it+1):
+            start_train = time.time()
+            model.train()    
+            losses = []
+            np.random.shuffle(er_vocab_pairs)
+            for j in range(0, len(er_vocab_pairs), self.batch_size):
+                data_batch, targets = self.get_batch(er_vocab, er_vocab_pairs, j)
+                opt.zero_grad()
+                e1_idx = torch.tensor(data_batch[:,0]).type(torch.LongTensor)
+                r_idx = torch.tensor(data_batch[:,1]).type(torch.LongTensor)
+                if self.cuda:
+                    e1_idx = e1_idx.cuda()
+                    r_idx = r_idx.cuda()
+                predictions = model.forward(e1_idx, r_idx)
+                if self.label_smoothing:
+                    targets = ((1.0-self.label_smoothing)*targets) + (1.0/targets.size(1))           
+                loss = model.loss(predictions, targets)
+                loss.backward()
+                opt.step()
+                losses.append(loss.item())
+            if self.decay_rate:
+                scheduler.step()
+            print('Iteration:'+str(it+checkpoint['epoch']))
+            print('Training Time:'+str(time.time()-start_train))    
+            print('Loss:'+str(np.mean(losses)))
+            wandb.save({
+                'epoch': (it+checkpoint['epoch']),
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': opt.state_dict()
+            }, model_state_path)
+            model.eval()
+            with torch.no_grad():
+                print("Validation:")
+                self.evaluate(model, d.valid_data)
+        with torch.no_grad():
+            print("Test:")
+            start_test = time.time()
+            self.evaluate(model, d.test_data)
+            print("Testing time:"+str(time.time()-start_test))
+
+    def train_and_eval(self, path='model_state.pt'):
         print("Training the TuckER model...")
         if self.kwargs["bk"]:
             print("Background knowledge=True")
@@ -154,6 +220,11 @@ class Experiment:
             print('Iteration:'+str(it))
             print('Training Time:'+str(time.time()-start_train))    
             print('Loss:'+str(np.mean(losses)))
+            wandb.save({
+                'epoch': it,
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': opt.state_dict()
+            }, path)
             model.eval()
             with torch.no_grad():
                 print("Validation:")
@@ -225,6 +296,8 @@ if __name__ == '__main__':
                             input_dropout=args.input_dropout, hidden_dropout1=args.hidden_dropout1, 
                             hidden_dropout2=args.hidden_dropout2, label_smoothing=args.label_smoothing,
                             bk=args.bk)
-    experiment.train_and_eval()
+    path='model_state.pt'
+    if args.bk: path='model_state_bk.pt'
+    experiment.train_and_eval(path)
                 
 

@@ -1,7 +1,7 @@
 import wandb
 wandb.login('1e505430989c86455d2d70e1ef990b4bc50cb69c')
 wandb.init(project="ift6760-exp",anonymous='allow')
-wandb.save("*.pt")
+wandb.save('*.pth')
 from load_data import Data
 import numpy as np
 import torch
@@ -105,9 +105,10 @@ class Experiment:
         print('Mean reciprocal rank: {0}'.format(np.mean(1./np.array(ranks))))
 
 
-    def retrain(self, num_it, model_state_path='model_state.pt'):
-        checkpoint = torch.load(model_state_path)
-
+    def retrain(self, num_it, model_state_path='model_state.pth'):
+        state_path = wandb.restore(model_state_path, run_path=path)
+        checkpoint = torch.load(state_path.name)
+        
         print("Resuming training at epoch {} for {} epochs".format(checkpoint['epoch'], num_it))
         if self.kwargs["bk"]:
             print("Background knowledge=True")
@@ -172,7 +173,7 @@ class Experiment:
             self.evaluate(model, d.test_data)
             print("Testing time:"+str(time.time()-start_test))
 
-    def train_and_eval(self, path='model_state.pt'):
+    def train_and_eval(self, path='model_state.pth'):
         print("Training the TuckER model...")
         if self.kwargs["bk"]:
             print("Background knowledge=True")
@@ -238,6 +239,10 @@ class Experiment:
            
 
         
+def str2bool(v):
+    if v=='True': return True
+    elif v=='False': return False
+    else: raise argparse.ArgumentTypeError('Boolean value expected.')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -265,7 +270,7 @@ if __name__ == '__main__':
                     help="Dropout after the second hidden layer.")
     parser.add_argument("--label_smoothing", type=float, default=0.2, nargs="?",
                     help="Amount of label smoothing.")
-    parser.add_argument("--bk", type=bool, default=True, nargs="?",
+    parser.add_argument("--bk", type=str2bool, default=True, nargs="?",
                     help="Whether to use background knowledge or not.")
 
     args = parser.parse_args()
@@ -282,6 +287,7 @@ if __name__ == '__main__':
     config.batch_size = args.batch_size
     config.num_iterations = args.num_iterations
     config.bk=args.bk
+    print(args.bk)
     
     dataset = args.dataset
     data_dir = "data/%s/" % dataset
@@ -297,8 +303,8 @@ if __name__ == '__main__':
                             input_dropout=args.input_dropout, hidden_dropout1=args.hidden_dropout1, 
                             hidden_dropout2=args.hidden_dropout2, label_smoothing=args.label_smoothing,
                             bk=args.bk)
-    path='model_state.pt'
-    if args.bk: path='model_state_sym.pt'
+    path='model_state.pth'
+    if args.bk: path='model_state_sym.pth'
     experiment.train_and_eval(path)
                 
 

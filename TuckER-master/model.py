@@ -20,8 +20,7 @@ class TuckER(torch.nn.Module):
         self.bn0 = torch.nn.BatchNorm1d(d1)
         self.bn1 = torch.nn.BatchNorm1d(d1)
         self.bk = kwargs["bk"]
-        if self.bk: self.constraints=torch.tensor([0,1,-1,0,-1,-1,-1,-1,1,0,1]).to('cuda')
-        
+        self.constraints=torch.tensor([0,1,-1,0,-1,-1,-1,-1,1,0,1]).to('cuda')
 
     def init(self):
         xavier_normal_(self.E.weight.data)
@@ -51,5 +50,8 @@ class TuckER(torch.nn.Module):
             pred = torch.sigmoid(x1+x2)
             
         else: pred = torch.sigmoid(x1)
-            
         return pred
+    
+    def regularizer(self):
+        W_mat = torch.einsum('ijk,bi,b->bjk',self.W, self.R.weight,torch.abs(self.constraints))
+        return torch.norm(W_mat-torch.einsum('ijk,i->ikj',W_mat, self.constraints))

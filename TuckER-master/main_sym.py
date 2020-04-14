@@ -1,7 +1,7 @@
 import wandb
 wandb.login('1e505430989c86455d2d70e1ef990b4bc50cb69c')
 wandb.init(project="ift6760-exp",anonymous='allow')
-wandb.save('*.pth')
+wandb.save('*.pts')
 from load_data import Data
 import numpy as np
 import torch
@@ -105,7 +105,7 @@ class Experiment:
         print('Mean reciprocal rank: {0}'.format(np.mean(1./np.array(ranks))))
 
 
-    def retrain(self, num_it, model_state_path='model_state.pth'):
+    def retrain(self, num_it, path="rkbrary/ift6760-exp/a1b2c3d", model_state='model_state.pts'):
         state_path = wandb.restore(model_state_path, run_path=path)
         checkpoint = torch.load(state_path.name)
         
@@ -173,7 +173,7 @@ class Experiment:
             self.evaluate(model, d.test_data)
             print("Testing time:"+str(time.time()-start_test))
 
-    def train_and_eval(self, path='model_state.pth'):
+    def train_and_eval(self, path='model_state.pts'):
         print("Training the TuckER model...")
         if self.kwargs["bk"]:
             print("Background knowledge=True")
@@ -226,7 +226,7 @@ class Experiment:
                 'epoch': it,
                 'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': opt.state_dict()
-            }, path)
+            }, os.path.join(wandb.run.dir, path))
             model.eval()
             with torch.no_grad():
                 print("Validation:")
@@ -303,8 +303,8 @@ if __name__ == '__main__':
                             input_dropout=args.input_dropout, hidden_dropout1=args.hidden_dropout1, 
                             hidden_dropout2=args.hidden_dropout2, label_smoothing=args.label_smoothing,
                             bk=args.bk)
-    path='model_state.pth'
-    if args.bk: path='model_state_sym.pth'
+    path='model_state.pts'
+    if args.bk: path='model_state_sym.pts'
     experiment.train_and_eval(path)
                 
 

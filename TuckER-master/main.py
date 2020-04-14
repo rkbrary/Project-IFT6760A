@@ -53,7 +53,7 @@ class Experiment:
         return np.array(batch), targets
 
     
-    def evaluate(self, model, data):
+    def evaluate(self, data):
         hits = []
         ranks = []
         for i in range(10):
@@ -73,7 +73,7 @@ class Experiment:
                 e1_idx = e1_idx.cuda()
                 r_idx = r_idx.cuda()
                 e2_idx = e2_idx.cuda()
-            predictions = model.forward(e1_idx, r_idx)
+            predictions = self.model.forward(e1_idx, r_idx)
 
             for j in range(data_batch.shape[0]):
                 filt = er_vocab[(data_batch[j][0], data_batch[j][1])]
@@ -106,7 +106,7 @@ class Experiment:
 
 
     def retrain(self, num_it, path="rkbrary/ift6760-exp/a1b2c3d", model_state='model_state.pth'):
-        state_path = wandb.restore(model_state_path, run_path=path)
+        state_path = wandb.restore(model_state, run_path=path)
         checkpoint = torch.load(state_path.name)
         
         print("Resuming training at epoch {} for {} epochs".format(checkpoint['epoch'], num_it))
@@ -119,12 +119,12 @@ class Experiment:
         train_data_idxs = self.get_data_idxs(d.train_data)
         print("Number of training data points: %d" % len(train_data_idxs))
         
-        model = TuckER(d, self.ent_vec_dim, self.rel_vec_dim, **self.kwargs)
-        wandb.watch(model, log=None)
+        self.model = TuckER(d, self.ent_vec_dim, self.rel_vec_dim, **self.kwargs)
+        wandb.watch(self.model, log=None)
         if self.cuda:
-            model.cuda()
-        model.load_state_dict(checkpoint['model_state_dict'])
-        opt = torch.optim.Adam(model.parameters(), lr=self.learning_rate)
+            self.model.cuda()
+        self.model.load_state_dict(checkpoint['model_state_dict'])
+        opt = torch.optim.Adam(self.model.parameters(), lr=self.learning_rate)
         opt.load_state_dict(checkpoint['optimizer_state_dict'])
         if self.decay_rate:
             scheduler = ExponentialLR(opt, self.decay_rate)
@@ -135,7 +135,7 @@ class Experiment:
         print("Starting training...")
         for it in range(1, num_it+1):
             start_train = time.time()
-            model.train()    
+            self.model.train()    
             losses = []
             np.random.shuffle(er_vocab_pairs)
             for j in range(0, len(er_vocab_pairs), self.batch_size):
@@ -146,10 +146,10 @@ class Experiment:
                 if self.cuda:
                     e1_idx = e1_idx.cuda()
                     r_idx = r_idx.cuda()
-                predictions = model.forward(e1_idx, r_idx)
+                predictions = self.model.forward(e1_idx, r_idx)
                 if self.label_smoothing:
                     targets = ((1.0-self.label_smoothing)*targets) + (1.0/targets.size(1))           
-                loss = model.loss(predictions, targets)
+                loss = self.model.loss(predictions, targets)
                 loss.backward()
                 opt.step()
                 losses.append(loss.item())
@@ -160,17 +160,17 @@ class Experiment:
             print('Loss:'+str(np.mean(losses)))
             torch.save({
                 'epoch': (it+checkpoint['epoch']),
-                'model_state_dict': model.state_dict(),
+                'model_state_dict': self.model.state_dict(),
                 'optimizer_state_dict': opt.state_dict()
-            }, os.path.join(wandb.run.dir, model_state_path))
-            model.eval()
+            }, os.path.join(wandb.run.dir, model_state))
+            self.model.eval()
             with torch.no_grad():
                 print("Validation:")
-                self.evaluate(model, d.valid_data)
+                self.evaluate(d.valid_data)
         with torch.no_grad():
             print("Test:")
             start_test = time.time()
-            self.evaluate(model, d.test_data)
+            self.evaluate(d.test_data)
             print("Testing time:"+str(time.time()-start_test))
 
     def train_and_eval(self, path='model_state.pth'):
@@ -184,12 +184,12 @@ class Experiment:
         train_data_idxs = self.get_data_idxs(d.train_data)
         print("Number of training data points: %d" % len(train_data_idxs))
         
-        model = TuckER(d, self.ent_vec_dim, self.rel_vec_dim, **self.kwargs)
-        wandb.watch(model, log=None)
+        self.model = TuckER(d, self.ent_vec_dim, self.rel_vec_dim, **self.kwargs)
+        wandb.watch(self.model, log=None)
         if self.cuda:
-            model.cuda()
-        model.init()
-        opt = torch.optim.Adam(model.parameters(), lr=self.learning_rate)
+            self.model.cuda()
+        self.model.init()
+        opt = torch.optim.Adam(self.model.parameters(), lr=self.learning_rate)
         if self.decay_rate:
             scheduler = ExponentialLR(opt, self.decay_rate)
 
@@ -199,7 +199,7 @@ class Experiment:
         print("Starting training...")
         for it in range(1, self.num_iterations+1):
             start_train = time.time()
-            model.train()    
+            self.model.train()    
             losses = []
             np.random.shuffle(er_vocab_pairs)
             for j in range(0, len(er_vocab_pairs), self.batch_size):
@@ -210,10 +210,10 @@ class Experiment:
                 if self.cuda:
                     e1_idx = e1_idx.cuda()
                     r_idx = r_idx.cuda()
-                predictions = model.forward(e1_idx, r_idx)
+                predictions = self.model.forward(e1_idx, r_idx)
                 if self.label_smoothing:
                     targets = ((1.0-self.label_smoothing)*targets) + (1.0/targets.size(1))           
-                loss = model.loss(predictions, targets)
+                loss = self.model.loss(predictions, targets)
                 loss.backward()
                 opt.step()
                 losses.append(loss.item())
@@ -224,17 +224,17 @@ class Experiment:
             print('Loss:'+str(np.mean(losses)))
             torch.save({
                 'epoch': it,
-                'model_state_dict': model.state_dict(),
+                'model_state_dict': self.model.state_dict(),
                 'optimizer_state_dict': opt.state_dict()
             }, os.path.join(wandb.run.dir, path))
-            model.eval()
+            self.model.eval()
             with torch.no_grad():
                 print("Validation:")
-                self.evaluate(model, d.valid_data)
+                self.evaluate(d.valid_data)
         with torch.no_grad():
             print("Test:")
             start_test = time.time()
-            self.evaluate(model, d.test_data)
+            self.evaluate(d.test_data)
             print("Testing time:"+str(time.time()-start_test))
            
 
@@ -298,14 +298,14 @@ if __name__ == '__main__':
     torch.manual_seed(seed)
     if torch.cuda.is_available:
         torch.cuda.manual_seed_all(seed) 
-    d = Data(data_dir=data_dir, reverse=False)
+    d = Data(data_dir=data_dir, reverse=True)
     experiment = Experiment(num_iterations=args.num_iterations, batch_size=args.batch_size, learning_rate=args.lr, 
                             decay_rate=args.dr, ent_vec_dim=args.edim, rel_vec_dim=args.rdim, cuda=args.cuda,
                             input_dropout=args.input_dropout, hidden_dropout1=args.hidden_dropout1, 
                             hidden_dropout2=args.hidden_dropout2, label_smoothing=args.label_smoothing,
                             bk=args.bk)
-    path='model_state.pth'
-    if args.bk: path='model_state_bk.pth'
+    path='model_state_new.pth'
+    if args.bk: path='model_state_new_bk.pth'
     experiment.train_and_eval(path)
                 
 

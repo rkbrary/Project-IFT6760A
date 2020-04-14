@@ -1,6 +1,7 @@
+import pickle
 class Data:
 
-    def __init__(self, data_dir="data/FB15k-237/", reverse=False):
+    def __init__(self, data_dir="data/FB15k-237/", reverse=True):
         self.train_data = self.load_data(data_dir, "train", reverse=reverse)
         self.valid_data = self.load_data(data_dir, "valid", reverse=reverse)
         self.test_data = self.load_data(data_dir, "test", reverse=reverse)
@@ -13,12 +14,13 @@ class Data:
                 if i not in self.train_relations] + [i for i in self.test_relations \
                 if i not in self.train_relations]
 
-    def load_data(self, data_dir, data_type="train", reverse=False):
+    def load_data(self, data_dir, data_type="train", reverse=True):
+        if reverse and data_type=="train":
+            print('Removing the redundant symmetric relations in the training set...')
+            return pickle.load( open( 'new_train.p', "rb" ))
         with open("%s%s.txt" % (data_dir, data_type), "r") as f:
             data = f.read().strip().split("\n")
             data = [i.split() for i in data]
-            if reverse:
-                data += [[i[2], i[1]+"_reverse", i[0]] for i in data]
         return data
 
     def get_relations(self, data):

@@ -35,7 +35,7 @@ class TuckER(torch.nn.Module):
         temp = torch.cat(
             [torch.cat(
                 [
-                    torch.zeros((mat.size(0),i)),mat[:,(2*n-i+1)*i//2:(2*n-i)*(i+1)//2]
+                    torch.zeros((mat.size(0),i),device='cuda'),mat[:,(2*n-i+1)*i//2:(2*n-i)*(i+1)//2]
                 ],dim=1)[:,:,None] for i in range(n)],dim=2)
         return temp+temp.transpose(1,2)
     
@@ -43,7 +43,7 @@ class TuckER(torch.nn.Module):
         temp = torch.cat(
             [torch.cat(
                 [
-                    torch.zeros((mat.size(0),i+1)),mat[:,(2*n-i-1)*(i)//2:(2*n-i-2)*(i+1)//2]
+                    torch.zeros((mat.size(0),i+1),device='cuda'),mat[:,(2*n-i-1)*(i)//2:(2*n-i-2)*(i+1)//2]
                 ],dim=1)[:,:,None] for i in range(n)],dim=2)
         return temp-temp.transpose(1,2)
     

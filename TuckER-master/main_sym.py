@@ -106,7 +106,7 @@ class Experiment:
 
 
     def retrain(self, num_it, path="rkbrary/ift6760-exp/a1b2c3d", model_state='model_state.pts'):
-        state_path = wandb.restore(model_state_path, run_path=path)
+        state_path = wandb.restore(model_state, run_path=path)
         checkpoint = torch.load(state_path.name)
         
         print("Resuming training at epoch {} for {} epochs".format(checkpoint['epoch'], num_it))

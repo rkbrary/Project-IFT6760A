@@ -32,20 +32,20 @@ class TuckER(torch.nn.Module):
         self.bn1 = torch.nn.BatchNorm1d(d1)
         
     def mat_to_sym(self, mat, n):
-        temp = torch.cat([torch.cat([torch.zeros((mat.size(0),i)), mat[:,(2*n-i+1)*i//2:(2*n-i)*(i+1)//2]],dim=1)[:,:,None] for i in range(n)],dim=2)
+        temp = torch.cat(
+            [torch.cat(
+                [
+                    torch.zeros((mat.size(0),i)),mat[:,(2*n-i+1)*i//2:(2*n-i)*(i+1)//2]
+                ],dim=1)[:,:,None] for i in range(n)],dim=2)
         return temp+temp.transpose(1,2)
     
     def mat_to_asym(self, mat, n):
-        if mat.size(-1)!=n*(n-1)/2: raise Exception('Invalid dimensions')
-        d2=mat.size(0)
-        asym=torch.zeros((d2,n,n), device='cuda')
-        pos=0
-        for i in range(n):
-            temp=mat[:, pos:pos+(n-i-1)]
-            asym[:,i,i+1:] = temp
-            asym[:,i+1:,i] = -temp
-            pos+=n-i-1
-        return asym
+        temp = torch.cat(
+            [torch.cat(
+                [
+                    torch.zeros((mat.size(0),i+1)),mat[:,(2*n-i-1)*(i)//2:(2*n-i-2)*(i+1)//2]
+                ],dim=1)[:,:,None] for i in range(n)],dim=2)
+        return temp-temp.transpose(1,2)
     
         
 

@@ -13,7 +13,6 @@ class TuckER(torch.nn.Module):
         self.num_asym = torch.sum(self.constraints==-1)
         self.d1 = d1
         self.d2 = d2
-        self.diag(
         
         self.E = torch.nn.Embedding(len(d.entities), d1, padding_idx=0)
         self.R1 = torch.nn.Embedding(int(self.num_sym), d2, padding_idx=0)
@@ -38,7 +37,12 @@ class TuckER(torch.nn.Module):
                 [
                     torch.zeros((mat.size(0),i),device='cuda'),mat[:,(2*n-i+1)*i//2:(2*n-i)*(i+1)//2]
                 ],dim=1)[:,:,None] for i in range(n)],dim=2)
-        return temp+temp.transpose(1,2)-temp*(torch.eye(n)[None,:].expand(mat.size(0),n,n))
+        temp2 = torch.cat(
+            [torch.cat(
+                [
+                    torch.zeros((mat.size(0),i),device='cuda'),mat[:,(2*n-i+1)*i//2:(2*n-i)*(i+1)//2]
+                ],dim=1)[:,:,None] for i in range(n)],dim=2)
+        return temp + temp.transpose(1,2) - temp*(torch.eye(n,device='cuda')[None,:].expand(mat.size(0),n,n))
     
     def mat_to_asym(self, mat, n):
         temp = torch.cat(

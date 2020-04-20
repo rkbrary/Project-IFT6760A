@@ -162,7 +162,7 @@ class Experiment:
                 'epoch': (it+checkpoint['epoch']),
                 'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': opt.state_dict()
-            }, model_state_path)
+            }, model_state)
             model.eval()
             with torch.no_grad():
                 print("Validation:")

@@ -31,27 +31,29 @@ class TuckER(torch.nn.Module):
         self.bn0 = torch.nn.BatchNorm1d(d1)
         self.bn1 = torch.nn.BatchNorm1d(d1)
         
-    def mat_to_sym(self, mat, n):
-        temp = torch.cat(
+        symu_index = torch.cat(
             [torch.cat(
-                [
-                    torch.zeros((mat.size(0),i),device='cuda'),mat[:,(2*n-i+1)*i//2:(2*n-i)*(i+1)//2]
-                ],dim=1)[:,:,None] for i in range(n)],dim=2)
-        temp2 = torch.cat(
+                [torch.zeros(i,dtype=torch.long),
+                 torch.arange((2*d1-i+1)*i//2, (2*d1-i)*(i+1)//2)]
+             )[None,:] for i in range(d1)],
+            dim=0)
+        
+        syml_index = torch.cat(
             [torch.cat(
-                [
-                    torch.zeros((mat.size(0),i),device='cuda'),mat[:,(2*n-i+1)*i//2:(2*n-i)*(i+1)//2]
-                ],dim=1)[:,:,None] for i in range(n)],dim=2)
-        return temp + temp.transpose(1,2) - temp*(torch.eye(n,device='cuda')[None,:].expand(mat.size(0),n,n))
+                [torch.zeros(i+1,dtype=torch.long),
+                 torch.arange((2*d1-i+1)*i//2+1,(2*d1-i)*(i+1)//2)]
+            )[None,:] for i in range(d1)],
+            dim=0).t()
+        
+        
+        self.sym_index =  symu_index + syml_index
     
-    def mat_to_asym(self, mat, n):
-        temp = torch.cat(
+        self.asym_index = torch.cat(
             [torch.cat(
-                [
-                    torch.zeros((mat.size(0),i+1),device='cuda'),mat[:,(2*n-i-1)*(i)//2:(2*n-i-2)*(i+1)//2]
-                ],dim=1)[:,:,None] for i in range(n)],dim=2)
-        return temp-temp.transpose(1,2)
-    
+                [torch.zeros(i+1,dtype=torch.long),
+                 torch.arange((2*d1-i-1)*i//2+1,(2*d1-i-2)*(i+1)//2+1)]
+            )[None,:] for i in range(d1)],
+            dim=0)
     
     def construct_RW(self):
         R = torch.cat(
@@ -60,10 +62,11 @@ class TuckER(torch.nn.Module):
             torch.cat((torch.zeros((self.num_asym, self.d2), device='cuda'), self.R2.weight), dim=1),
             self.R3.weight
             ), dim=0)
+        W2_temp=torch.cat((torch.zeros(self.d2, device='cuda')[:,None],self.W2),dim=1)[:,self.asym_index]
         W = torch.cat(
             (
-                self.mat_to_sym(self.W1, self.d1),
-                self.mat_to_asym(self.W2, self.d1)
+                self.W1[:, self.sym_index],
+                W2_temp-W2_temp.transpose(1,2)
             ),dim=0)
         return R,W
 

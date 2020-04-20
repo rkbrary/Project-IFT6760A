@@ -13,6 +13,7 @@ class TuckER(torch.nn.Module):
         self.num_asym = torch.sum(self.constraints==-1)
         self.d1 = d1
         self.d2 = d2
+        self.diag(
         
         self.E = torch.nn.Embedding(len(d.entities), d1, padding_idx=0)
         self.R1 = torch.nn.Embedding(int(self.num_sym), d2, padding_idx=0)
@@ -37,7 +38,7 @@ class TuckER(torch.nn.Module):
                 [
                     torch.zeros((mat.size(0),i),device='cuda'),mat[:,(2*n-i+1)*i//2:(2*n-i)*(i+1)//2]
                 ],dim=1)[:,:,None] for i in range(n)],dim=2)
-        return temp+temp.transpose(1,2)
+        return temp+temp.transpose(1,2)-temp*(torch.eye(n)[None,:].expand(mat.size(0),n,n))
     
     def mat_to_asym(self, mat, n):
         temp = torch.cat(
@@ -47,8 +48,22 @@ class TuckER(torch.nn.Module):
                 ],dim=1)[:,:,None] for i in range(n)],dim=2)
         return temp-temp.transpose(1,2)
     
-        
+    
+    def construct_RW(self):
+        R = torch.cat(
+            (
+            torch.cat((self.R1.weight, torch.zeros((self.num_sym, self.d2), device='cuda')), dim=1),
+            torch.cat((torch.zeros((self.num_asym, self.d2), device='cuda'), self.R2.weight), dim=1),
+            self.R3.weight
+            ), dim=0)
+        W = torch.cat(
+            (
+                self.mat_to_sym(self.W1, self.d1),
+                self.mat_to_asym(self.W2, self.d1)
+            ),dim=0)
+        return R,W
 
+    
     def init(self):
         xavier_normal_(self.E.weight.data)
         xavier_normal_(self.R1.weight.data)
@@ -57,19 +72,10 @@ class TuckER(torch.nn.Module):
         print('new model')
 
     def forward(self, e1_idx, r_idx):
-        R = torch.cat(
-            (
-            torch.cat((self.R1.weight, torch.zeros((self.num_sym, self.d2), device='cuda')), dim=1),
-            torch.cat((torch.zeros((self.num_asym, self.d2), device='cuda'), self.R2.weight), dim=1),
-            self.R3.weight
-            ), dim=0)
+        R,W=self.construct_RW()
 
         r = R[self.rel_perm[r_idx]]                                 #(batch, d_r)
-        W = torch.cat(
-            (
-                self.mat_to_sym(self.W1, self.d1),
-                self.mat_to_asym(self.W2, self.d1)
-            ),dim=0)
+
         W_mat = torch.einsum('ijk,bi->bjk',W,r)    #(batch, d_e, d_e)
         W_mat = self.hidden_dropout1(W_mat)
 

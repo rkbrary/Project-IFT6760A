@@ -273,6 +273,9 @@ if __name__ == '__main__':
                     help="Amount of label smoothing.")
     parser.add_argument("--bk", type=str2bool, default=False, nargs="?",
                     help="Whether to use background knowledge or not.")
+    parser.add_argument("--pdata", type=float, default=1.0, nargs="?",
+                    help="percentage of data to include in the training set")
+
 
     args = parser.parse_args()
     # Saving the configuration
@@ -288,6 +291,7 @@ if __name__ == '__main__':
     config.batch_size = args.batch_size
     config.num_iterations = args.num_iterations
     config.bk=args.bk
+    config.pdata=args.pdata
     print(args.bk)
     
     dataset = args.dataset
@@ -298,7 +302,7 @@ if __name__ == '__main__':
     torch.manual_seed(seed)
     if torch.cuda.is_available:
         torch.cuda.manual_seed_all(seed) 
-    d = Data(data_dir=data_dir, reverse=True)
+    d = Data(data_dir=data_dir, reverse=True, subset_percentage=args.pdata)
     experiment = Experiment(num_iterations=args.num_iterations, batch_size=args.batch_size, learning_rate=args.lr, 
                             decay_rate=args.dr, ent_vec_dim=args.edim, rel_vec_dim=args.rdim, cuda=args.cuda,
                             input_dropout=args.input_dropout, hidden_dropout1=args.hidden_dropout1, 

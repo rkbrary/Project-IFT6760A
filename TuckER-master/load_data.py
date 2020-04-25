@@ -1,8 +1,23 @@
 import pickle
+import random
+import math
+from collections import defaultdict
+
 class Data:
 
-    def __init__(self, data_dir="data/FB15k-237/", reverse=True):
+    def __init__(self, data_dir="data/FB15k-237/", reverse=True, subset_percentage=0.5):
         self.train_data = self.load_data(data_dir, "train", reverse=reverse)
+        redic = defaultdict(list)
+        for triple in self.train_data:
+            redic[(triple[1])].append(triple)
+
+        for key in redic:
+            redic[key] = random.sample(redic[key], math.floor(len(redic[key])*subset_percentage))
+        bla=[]
+        for key in redic:
+            bla=bla+redic[key]
+        self.train_data=bla
+
         self.valid_data = self.load_data(data_dir, "valid", reverse=reverse)
         self.test_data = self.load_data(data_dir, "test", reverse=reverse)
         self.data = self.train_data + self.valid_data + self.test_data

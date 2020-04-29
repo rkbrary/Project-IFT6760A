@@ -2,7 +2,7 @@ import wandb
 wandb.login('1e505430989c86455d2d70e1ef990b4bc50cb69c')
 wandb.init(project="ift6760-exp",anonymous='allow')
 wandb.save("*.pth")
-from load_data_remove import Data
+from load_data import Data
 import numpy as np
 import torch
 import time

@@ -4,7 +4,7 @@ import math
 from collections import defaultdict
 
 class Data:
-#1= sym, 2, antisym, 3 other, 4 none
+#1= sym, 2, antisym, 3 other, 4 none, 5 sym and antisym
     def __init__(self, data_dir="/content/drive/My Drive/Project-IFT6760A-master/Project-IFT6760A-master/TuckER-master/data/WN18RR/", reverse=True, subset_percentage=0.5, asymorsymorother=1):
         self.train_data = self.load_data(data_dir, "train", reverse=reverse)
         if (asymorsymorother==1):
@@ -18,6 +18,10 @@ class Data:
         elif (asymorsymorother==3):
             others=['_also_see', '_hypernym', '_synset_domain_topic_of']
             new_train=[(a,r,b) for (a,r,b) in self.train_data if r in others]#or (b,r,a) in self.train_data and b<=a
+            self.train_data= new_train
+        elif (asymorsymorother==5):
+            sanda=['_derivationally_related_form', '_similar_to', '_verb_group','_has_part', '_instance_hypernym', '_member_meronym','_member_of_domain_region','_member_of_domain_usage']
+            new_train=[(a,r,b) for (a,r,b) in self.train_data if r in sanda]#or (b,r,a) in self.train_data and b<=a
             self.train_data= new_train
         else:
             print("Training with all relation types")
@@ -46,6 +50,10 @@ class Data:
             others=['_also_see', '_hypernym', '_synset_domain_topic_of']
             new_val=[(a,r,b) for (a,r,b) in self.valid_data if r in others]#or (b,r,a) in self.train_data and b<=a
             self.valid_data= new_val
+        elif (asymorsymorother==5):
+            sanda=['_has_part', '_instance_hypernym', '_member_meronym','_member_of_domain_region','_member_of_domain_usage','_derivationally_related_form', '_similar_to', '_verb_group']
+            new_val=[(a,r,b) for (a,r,b) in self.valid_data if r in sanda]#or (b,r,a) in self.train_data and b<=a
+            self.valid_data= new_val
         else:
             print("Validating with all relation types")
 
@@ -62,6 +70,10 @@ class Data:
             others=['_also_see', '_hypernym', '_synset_domain_topic_of']
             new_val=[(a,r,b) for (a,r,b) in self.test_data if r in others]#or (b,r,a) in self.train_data and b<=a
             self.test_data= new_val
+        elif (asymorsymorother==5):
+            sanda=['_has_part', '_instance_hypernym', '_member_meronym','_member_of_domain_region','_member_of_domain_usage','_derivationally_related_form', '_similar_to', '_verb_group']
+            new_test=[(a,r,b) for (a,r,b) in self.test_data if r in sanda]#or (b,r,a) in self.train_data and b<=a
+            self.test_data= new_test
         else:
             print("Testing with all relation types")
 

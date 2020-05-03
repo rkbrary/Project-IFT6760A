@@ -274,6 +274,8 @@ if __name__ == '__main__':
                     help="Whether to use background knowledge or not.")
     parser.add_argument("--pdata", type=float, default=1.0, nargs="?",
                     help="percentage of data to include in the training set")
+    parser.add_argument("--syasyothnone", type=int, default=1, nargs="?",
+                    help="To include only sym/antisym/others/no_restriction type relations in the dataset ")
 
     args = parser.parse_args()
     # Saving the configuration
@@ -290,6 +292,7 @@ if __name__ == '__main__':
     config.num_iterations = args.num_iterations
     config.bk=args.bk
     config.pdata=args.pdata
+    config.syasyothnone= args.syasyothnone
     print(args.bk)
     
     dataset = args.dataset
@@ -300,7 +303,7 @@ if __name__ == '__main__':
     torch.manual_seed(seed)
     if torch.cuda.is_available:
         torch.cuda.manual_seed_all(seed) 
-    d = Data(data_dir=data_dir, reverse=True, subset_percentage=args.pdata)
+    d = Data(data_dir=data_dir, reverse=True, subset_percentage=args.pdata, asymorsymorother=args.syasyothnone)
     experiment = Experiment(num_iterations=args.num_iterations, batch_size=args.batch_size, learning_rate=args.lr, 
                             decay_rate=args.dr, ent_vec_dim=args.edim, rel_vec_dim=args.rdim, cuda=args.cuda,
                             input_dropout=args.input_dropout, hidden_dropout1=args.hidden_dropout1, 

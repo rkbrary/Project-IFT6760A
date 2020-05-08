@@ -273,12 +273,15 @@ if __name__ == '__main__':
     parser.add_argument("--bk", type=str2bool, default=True, nargs="?",
                     help="Whether to use background knowledge or not.")
     parser.add_argument("--pdata", type=float, default=1.0, nargs="?",
-                    help="percentage of data to include in the training set")
-    parser.add_argument("--syasyothnone", type=int, default=1, nargs="?",
-                    help="To include only sym/antisym/others/no_restriction type relations in the dataset ")
+                    help="percentage of data to include in the training set: must be a float between 0 and 1")
+    parser.add_argument("--data_opt", type=int, default=0, nargs="?",
+                    help="Select restriction on dataset:\n0: no restriction\n1: only sym\n2: only asym\n3: both sym and asym\n4: all except sym/asym")
+
+
 
     args = parser.parse_args()
-    # Saving the configuration
+    
+    # Saving the configuration for wandb
     config = wandb.config
     config.lr = args.lr
     config.dr = args.dr
@@ -292,18 +295,20 @@ if __name__ == '__main__':
     config.num_iterations = args.num_iterations
     config.bk=args.bk
     config.pdata=args.pdata
-    config.syasyothnone= args.syasyothnone
+    config.data_opt= args.data_opt
     print(args.bk)
     
     dataset = args.dataset
     data_dir = "data/%s/" % dataset
-    torch.backends.cudnn.deterministic = True 
+    torch.backends.cudnn.deterministic = True
+    
+    # For reproducibility
     seed = 20
     np.random.seed(seed)
     torch.manual_seed(seed)
     if torch.cuda.is_available:
         torch.cuda.manual_seed_all(seed) 
-    d = Data(data_dir=data_dir, reverse=True, subset_percentage=args.pdata, asymorsymorother=args.syasyothnone)
+    d = Data(data_dir=data_dir, reverse=True, subset_percentage=args.pdata, data_opt=args.data_opt)
     experiment = Experiment(num_iterations=args.num_iterations, batch_size=args.batch_size, learning_rate=args.lr, 
                             decay_rate=args.dr, ent_vec_dim=args.edim, rel_vec_dim=args.rdim, cuda=args.cuda,
                             input_dropout=args.input_dropout, hidden_dropout1=args.hidden_dropout1, 

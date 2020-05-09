@@ -1,3 +1,12 @@
+This repo was pulled from https://github.com/ibalazevic/TuckER/
+
+and modified to incorporate background knowledge (BK).
+
+The implementations with BK only support the WN18RR dataset at the moment.
+
+To run the original, run the file main.py --bk=False.
+To run TuckER-bk, run the file main_sym.py
+To run TuckER-bk-score, run the file main.py --bk=True
 
 ## TuckER: Tensor Factorization for Knowledge Graph Completion
 
